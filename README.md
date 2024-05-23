@@ -51,8 +51,3 @@ Grad-CAM se implementa mediante las siguientes funciones en el archivo `model.py
 - `get_img_array(img, size)`: Preprocesa la imagen para que esté lista para la predicción.
 - `make_gradcam_heatmap(img_array, model, last_conv_layer_name, classifier_layer_names)`: Genera un mapa de calor Grad-CAM para una imagen dada y un modelo.
 - `save_and_display_gradcam(img, heatmap, alpha=0.4)`: Superpone el mapa de calor en la imagen original y la guarda.
-
-
-```
-
-Este contenido describe el proyecto UXi, cómo instalarlo, usarlo y detalles técnicos sobre su implementación. Copia y pega este contenido en un archivo llamado `README.md` en tu proyecto.
