@@ -1,7 +1,6 @@
 flask
-tensorflow
+tensorflow==2.12
 numpy
 opencv-python-headless
-Pillow
-cv2
+pillow
 numpy

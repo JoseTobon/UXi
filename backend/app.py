@@ -1,98 +1,52 @@
 from flask import Flask, request, jsonify
-import tensorflow as tf
-from tensorflow.keras.models import load_model
+from flask_cors import CORS # Cross-Origin Resource Handling, to access resources from other domains
+from PIL import Image
+from custom_functions import earth_mover_loss, get_img_array, make_gradcam_heatmap, save_and_display_gradcam # Custom functions
+from custom_functions import score_values # Custom variables
 import numpy as np
 import cv2
 import base64
-import io
-from PIL import Image
+import tensorflow as tf
 
+# First an application instance is created
 app = Flask(__name__)
 
-model = load_model('path/to/your/saved_model')
+# CORS must be enabled for all resources in this case so React can access the model from the back-end
+CORS(app,resources={r"/*":{"origins":"*"}})
 
-def get_img_array(img, size):
-    img = img.resize(size)
-    array = tf.keras.preprocessing.image.img_to_array(img)
-    array = np.expand_dims(array, axis=0)
-    return array
+# In case of exporting the model with pickle, it's imported with it
+model = tf.keras.models.load_model('./model/CalistaAestheticsMobileNet.h5',custom_objects={'earth_mover_loss': earth_mover_loss})
 
-def make_gradcam_heatmap(img_array, model, last_conv_layer_name, ):
-    grad_model = tf.keras.models.Model(
-        [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
-    )
+# Define a route for handling HTTP GET requests to the root URL
+@app.route('/', methods=['GET'])
+def get_data():
+    data = {
+        "message":"API is Running"
+    }
+    return jsonify(data)
 
-    with tf.GradientTape() as tape:
-        last_conv_layer_output, preds = grad_model(img_array)
-        pred_index = tf.argmax(preds[0])
-        class_channel = preds[:, pred_index]
-
-    grads = tape.gradient(class_channel, last_conv_layer_output)
-    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-
-    last_conv_layer_output = last_conv_layer_output[0]
-    heatmap = last_conv_layer_output @ pooled_grads[..., tf.newaxis]
-    heatmap = tf.squeeze(heatmap)
-
-    heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
-    return heatmap.numpy()
-
-def save_and_display_gradcam(img, heatmap, alpha=0.4):
-    heatmap = cv2.resize(heatmap, (img.size[0], img.size[1]))
-    heatmap = np.uint8(255 * heatmap)
-    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-    superimposed_img = heatmap * alpha + np.array(img)
-    return Image.fromarray(superimposed_img)
-
+# Define a route for making predictions
 @app.route('/predict', methods=['POST'])
 def predict():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file'}), 400
 
-    file = request.files['file']
+    file = request.files['image']
     img = Image.open(file.stream)
-
-    img_array = get_img_array(img, (192, 256))
-    heatmap = make_gradcam_heatmap(img_array, model, 'conv2d', ['flatten', 'dense', 'dropout', 'dense_1'])
-
-    prediction = model.predict(img_array)[0][0]
-
-    heatmap_img = save_and_display_gradcam(img, heatmap)
-    buffered = io.BytesIO()
-    heatmap_img.save(buffered, format="JPEG")
-    heatmap_str = base64.b64encode(buffered.getvalue()).decode()
-
-    return jsonify({'prediction': prediction, 'heatmap': heatmap_str})
-
+    try:
+        img_array = get_img_array(img, (256, 192))
+        heatmap = make_gradcam_heatmap(img_array, model)
+        rate_prediction = model.predict(img_array)
+        print(f"Prediction is ready")
+        heatmap_w_image = save_and_display_gradcam(img, heatmap) 
+        print(f"Heatmap has been merged with image")
+        # Convert image for json response
+        retval, buffer = cv2.imencode('.jpg', heatmap_w_image)
+        pic_str = base64.b64encode(buffer)
+        print(f"Heatmap is ready")
+        return jsonify({'Prediction': float(np.sum(rate_prediction[0]*score_values)), 'heatmap': str(pic_str)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-
--------------------------------------------------------------------------------------------------------------------
-
-
-from flask import Flask, request, jsonify
-import tensorflow as tf
-import numpy as np
-import cv2
-
-app = Flask(_name_)
-model = tf.keras.models.load_model('path_to_model/CalistaAestheticsMobileNet.keras')
-
-@app.route('/predict', methods=['POST'])
-def predict():
-    file = request.files['image']
-    img = np.array(tf.keras.preprocessing.image.load_img(file, target_size=(height, width)))
-    img_array = tf.expand_dims(img, 0)  # Create a batch
-
-    preds = model.predict(img_array)
-    heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name, classifier_layer_names)
-    superimposed_img = save_and_display_gradcam(file, heatmap)
-
-    # Convert image for json response
-    retval, buffer = cv2.imencode('.jpg', superimposed_img)
-    pic_str = base64.b64encode(buffer)
-
-    return jsonify({'grade': str(preds[0]), 'heatmap': str(pic_str)})
-
-if _name_ == '_main_':
-    app.run(debug=True)

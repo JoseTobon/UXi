@@ -15,63 +15,40 @@ def earth_mover_loss(y_true, y_pred):
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name='conv_pw_13'):
     """Generates a Grad-CAM heatmap for a given image and model"""
     try:
-        print(f"grad_model gen")
         grad_model = tf.keras.models.Model(
             [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
         )
 
         with tf.GradientTape() as tape:
             last_conv_layer_output, preds = grad_model(img_array)
-            print(f"Last conv layer output shape: {last_conv_layer_output.shape}")
-            print(f"Model predictions: {preds.numpy()}")
             pred_index = tf.argmax(preds[0])
             class_channel = preds[:, pred_index]
-            print(f"Class channel shape: {class_channel.shape}")
 
         # Ensure the tape is watching the correct tensor
         tape.watch(last_conv_layer_output)
-
         grads = tape.gradient(class_channel, last_conv_layer_output)
-        print(f"Gradients shape: {grads.shape}")
-
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-
-        print(f"third process - last_conv")
-
         last_conv_layer_output = last_conv_layer_output[0]
-
-        print(f"fourth process - heatmap")
-
         heatmap = tf.matmul(last_conv_layer_output, pooled_grads[..., tf.newaxis])  # Use tf.matmul for matrix multiplication
 
-        print(f"fifth process - matrix multiplication {heatmap}")
-
-
         heatmap = tf.squeeze(heatmap)  # Squeeze only if heatmap has more than one dimension
-
-        print(f"fifth process - squeezing")
-
 
         # Ensure heatmap values are valid before normalization
         heatmap = tf.where(tf.math.is_nan(heatmap), tf.zeros_like(heatmap), heatmap)
         heatmap = tf.where(tf.math.is_inf(heatmap), tf.zeros_like(heatmap), heatmap)
-
-        print(f"fifth process - maximum")
-
-
         heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
-        print(f"heatmap returned!!")
         return heatmap.numpy()
     except Exception as e:
         print(f"ERROR making the heatmap {e}")
 
 
 def save_and_display_gradcam(img, heatmap, alpha=0.4):
+    img = img.convert('RGB')
     heatmap = cv2.resize(heatmap, (img.size[0], img.size[1]))
     heatmap = np.uint8(255 * heatmap)
     heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
     superimposed_img = heatmap * alpha + np.array(img)
-    return Image.fromarray(superimposed_img)
+    return Image.fromarray(supe rimposed_img)
 
 # The uploaded image is resized and transformed into an array for the model to read
 def get_img_array(img, size):
