@@ -1,0 +1,52 @@
+body, html, #root, .app {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    background-color: #6C5DCB;
+    padding: 15px;
+    padding-left: 30;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.header .logo img {
+    height: 65px;
+}
+
+.main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: calc(100% - 120px); /* Ajusta según el tamaño de tu header y footer */
+}
+
+.main-content .intro {
+    text-align: center;
+}
+
+.main-content h1 {
+    color: #545454;
+    
+}
+
+.main-content .get-started {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #6C5DCB;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+}
+
