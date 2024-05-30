@@ -48,7 +48,7 @@ def save_and_display_gradcam(img, heatmap, alpha=0.4):
     heatmap = np.uint8(255 * heatmap)
     heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
     superimposed_img = heatmap * alpha + np.array(img)
-    return Image.fromarray(supe rimposed_img)
+    return Image.fromarray(superimposed_img)
 
 # The uploaded image is resized and transformed into an array for the model to read
 def get_img_array(img, size):
