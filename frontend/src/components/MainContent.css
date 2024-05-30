@@ -1,0 +1,46 @@
+.main-content {
+    display: flex;
+    height: 100vh; /* Ajusta la altura según sea necesario */
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    overflow: hidden; /* Evita el desplazamiento */
+}
+
+.image-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%; /* Ocupa el 50% del ancho */
+    background-color: #f5f5f5; /* Opcional: Añade un fondo para visualizar la sección */
+}
+
+.image-section img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.text-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 50%; /* Ocupa el 50% del ancho */
+    padding: 20px;
+    background-color: #ffffff; /* Opcional: Añade un fondo para visualizar la sección */
+}
+
+.get-started {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #5D4BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.get-started:hover {
+    background-color: #4a3ac7;
+}
+
+
