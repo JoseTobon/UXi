@@ -1,0 +1,16 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.uploaded-image {
+    max-width: 100%;
+    max-height: calc(100vh - 140px); /* Ajusta según el tamaño de tu header y footer */
+    margin: auto;
+    display: block;
+    padding: 20px; /* Ajusta este valor según sea necesario */
+    padding-top: 60px;
+    box-sizing: border-box; /* Asegura que el padding no afecte el tamaño máximo de la imagen */
+}
+
