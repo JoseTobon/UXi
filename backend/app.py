@@ -17,7 +17,7 @@ def get_img_array(img, size):
     array = np.expand_dims(array, axis=0)
     return array
 
-def make_gradcam_heatmap(img_array, model, last_conv_layer_name, classifier_layer_names):
+def make_gradcam_heatmap(img_array, model, last_conv_layer_name, ):
     grad_model = tf.keras.models.Model(
         [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
     )
@@ -66,3 +66,33 @@ def predict():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+from flask import Flask, request, jsonify
+import tensorflow as tf
+import numpy as np
+import cv2
+
+app = Flask(_name_)
+model = tf.keras.models.load_model('path_to_model/CalistaAestheticsMobileNet.keras')
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    file = request.files['image']
+    img = np.array(tf.keras.preprocessing.image.load_img(file, target_size=(height, width)))
+    img_array = tf.expand_dims(img, 0)  # Create a batch
+
+    preds = model.predict(img_array)
+    heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name, classifier_layer_names)
+    superimposed_img = save_and_display_gradcam(file, heatmap)
+
+    # Convert image for json response
+    retval, buffer = cv2.imencode('.jpg', superimposed_img)
+    pic_str = base64.b64encode(buffer)
+
+    return jsonify({'grade': str(preds[0]), 'heatmap': str(pic_str)})
+
+if _name_ == '_main_':
+    app.run(debug=True)
