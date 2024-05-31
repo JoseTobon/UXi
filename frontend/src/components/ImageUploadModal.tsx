@@ -82,9 +82,10 @@ interface ImageUploadModalProps {
     onClose: () => void;
     onImageUpload: (image: File) => void;
     onProcessedImage: (image: string) => void;  // New prop
+    onTextPredict: (string: string) => void;
 }
 
-const ImageUploadModal: React.FC<ImageUploadModalProps> = ({ isOpen, onClose, onImageUpload, onProcessedImage }) => {
+const ImageUploadModal: React.FC<ImageUploadModalProps> = ({ isOpen, onClose, onImageUpload, onProcessedImage, onTextPredict }) => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -121,15 +122,18 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({ isOpen, onClose, on
 
             // Assuming the JSON structure has a key "heatmap" for the image bytes
             const imageBytes = data.heatmap;
+            const predictText = data.Prediction;
 
             // Remove the b' and ' from the byte string and convert to Base64
             const base64String = imageBytes.replace(/^b'|'+$/g, '');
-            const imageSrc = `data:image/jpeg;base64,${base64String}`;
+            const imageSrc = `data:image/jpeg;base64, ${base64String}`;
 
             // Set the processed image string to the App component
             onProcessedImage(imageSrc);
-            //onImageUpload(selectedImage);
+            onTextPredict(predictText);
             onClose();
+            //onImageUpload(selectedImage);
+
         } catch (error) {
             console.error('Error:', error);
         }
@@ -158,4 +162,3 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({ isOpen, onClose, on
 };
 
 export default ImageUploadModal;
-

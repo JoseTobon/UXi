@@ -95,48 +95,65 @@ export default App;
 */
 
 import React, { useState } from 'react';
+import Header from './components/Header';
 import MainContent from './components/MainContent';
+import Footer from './components/Footer';
 import ImageUploadModal from './components/ImageUploadModal';
-import './App.css'; // Asegúrate de que este archivo exista y tenga los estilos necesarios
+import './App.css';
 
 const App: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+    const [processedImage, setProcessedImage] = useState<string | null>(null);
+    const [predictText, setPredictText] = useState<string>('');
+
+    const handleImageUpload = (image: File) => {
+        setUploadedImage(URL.createObjectURL(image));
+    };
+
+    const handleProcessedImage = (imageSrc: string) => {
+        setProcessedImage(imageSrc);
+    };
+
+    const handleTextPredict = (predictText: string) => {
+        setPredictText(predictText);
+    };
 
     const handleGetStartedClick = () => {
         setIsModalOpen(true);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleImageUpload = (image: File) => {
-        console.log('Image uploaded:', image);
-        // El manejo de la imagen subida está en el modal
-    };
-
     return (
-        <div>
-            {!uploadedImageUrl ? (
-                <MainContent onGetStartedClick={handleGetStartedClick} />
-            ) : (
-                <div className="uploaded-content">
-                    <img src={uploadedImageUrl} alt="Uploaded" className="uploaded-image" />
+        <div className="app">
+            <Header />
+
+            {/* Condicionalmente renderiza componentes */}
+            {processedImage && predictText ? (
+                <div className="results">
+                    <img src={processedImage} alt="Processed" className="processed-image" />
+                    <div className="predicted-text">Puntuacion: {predictText}</div>
                 </div>
+            ) : (
+                <>
+                    {!uploadedImage && <MainContent onGetStartedClick={handleGetStartedClick} />}
+                    {uploadedImage && <img src={uploadedImage} alt="Uploaded" className="uploaded-image" />}
+                </>
             )}
-             <ImageUploadModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onImageUpload={handleImageUpload}
+
+            <ImageUploadModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onImageUpload={handleImageUpload} 
+                onProcessedImage={handleProcessedImage}
+                onTextPredict={handleTextPredict}
             />
+
+            {!processedImage && !predictText && <Footer />}
         </div>
     );
 };
 
 export default App;
-
-
 
 
 

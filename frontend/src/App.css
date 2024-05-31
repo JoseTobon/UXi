@@ -14,3 +14,9 @@
     padding-top: 60px;
     box-sizing: border-box; /* Asegura que el padding no afecte el tamaño máximo de la imagen */
 }
+
+.predicted-label{
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px; /* Ajusta el tamaño de la fuente según sea necesario */
+}
