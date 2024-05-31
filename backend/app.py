@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app,resources={r"/*":{"origins":"*"}})
 
 # In case of exporting the model with pickle, it's imported with it
-model = tf.keras.models.load_model('./model/CalistaAestheticsMobileNet.h5',custom_objects={'earth_mover_loss': earth_mover_loss})
+model = tf.keras.models.load_model('./model/3_CalistaAestheticsMobileNet.h5',custom_objects={'earth_mover_loss': earth_mover_loss})
 
 # Define a route for handling HTTP GET requests to the root URL
 @app.route('/', methods=['GET'])
