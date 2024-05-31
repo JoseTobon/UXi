@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import './ImageUploadModal.css';
 
@@ -19,10 +20,33 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({ isOpen, onClose, on
         }
     };
 
-    const handleSubmit = () => {
-        if (selectedImage) {
+    const handleSubmit = async (event: any) => {
+
+        event.preventDefault();
+        if (!selectedImage) {
+            alert('Please select a file first!');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', selectedImage);
+
+        try {
+            const response = await fetch("http://54.160.161.1:5000/predict", {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('Success:', data);
             onImageUpload(selectedImage);
             onClose();
+        } catch (error) {
+            console.error('Error:', error);
         }
     };
 
@@ -49,4 +73,5 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({ isOpen, onClose, on
 };
 
 export default ImageUploadModal;
+
 
