@@ -4,6 +4,14 @@
     height: 100%;
 }
 
+.results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 20px; /* Ajusta según sea necesario */
+}
+
 
 .uploaded-image, .processed-image{
     max-width: 100%;
@@ -13,10 +21,15 @@
     padding: 20px; /* Ajusta este valor según sea necesario */
     padding-top: 60px;
     box-sizing: border-box; /* Asegura que el padding no afecte el tamaño máximo de la imagen */
+    
 }
 
 .predicted-label{
     margin-bottom: 20px;
     text-align: center;
-    font-size: 24px; /* Ajusta el tamaño de la fuente según sea necesario */
+    font-size: 30px; /* Ajusta el tamaño de la fuente según sea necesario */
+}
+
+.predicted-text{
+    font-size: 25px;
 }
