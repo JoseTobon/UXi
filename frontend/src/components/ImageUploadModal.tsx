@@ -108,7 +108,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({ isOpen, onClose, on
         formData.append('image', selectedImage);
 
         try {
-            const response = await fetch("http://54.160.161.1:5000/predict", {
+            const response = await fetch("http://localhost:5000/predict", {
                 method: 'POST',
                 body: formData,
             });
