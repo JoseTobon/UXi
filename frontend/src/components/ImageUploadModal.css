@@ -83,3 +83,19 @@
 .cancel-btn:hover {
     background-color: #ddd;
 }
+
+.back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #5D4BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.back-button:hover {
+    background-color: #4a3ac7;
+}
+

@@ -1,11 +1,21 @@
 .header {
-    background-color: #5D4BFF;
-    padding: 20px;
+    background-color: #6C5DCB;
+    padding: 15px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
+.header .logo {
+    cursor: pointer;
+}
+
 .header .logo img {
-    height: 50px;
+    height: 65px;
+}
+
+.header .header-title {
+    font-size: 1.5rem;
+    color: white;
+    margin-right: 20px;
 }
